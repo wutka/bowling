@@ -20,7 +20,7 @@ makeMessage oldm m =
 -- Processes a frame
 processFrame : List Int -> GameStateType -> GameStateType
 -- Empty frame
-processFrame [] (GameState r1 r2 f s c m) = GameState r1 r2 f s False ""
+processFrame [] (GameState r1 r2 f s c m) = GameState r1 r2 f s False (makeMessage m "")
 
 -- Strike
 processFrame [10] (GameState r1 r2 f s c m) =
@@ -28,14 +28,14 @@ processFrame [10] (GameState r1 r2 f s c m) =
 
 -- Incomplete frame
 processFrame [roll] (GameState r1 r2 f s c m) =
-    GameState roll r1 f (s+roll) False ""
+    GameState roll r1 f (s+roll) False (makeMessage m "")
 
 -- Two roll frame, must check for spare here
 processFrame [roll1,roll2] (GameState r1 r2 f s c m) =
     if roll1+roll2 == 10 then
-        GameState roll1 roll2 (f+1) (s + 10 + r1) (f==9) makeMessage m "Spare")
+        GameState roll1 roll2 (f+1) (s + 10 + r1) (f==9) (makeMessage m "Spare")
     else
-        GameState roll1 roll2 (f+1) (s + roll1 + roll2) (f==9) makeMessage m "")
+        GameState roll1 roll2 (f+1) (s + roll1 + roll2) (f==9) (makeMessage m "")
 
 -- Last frame in the game
 processFrame [roll1,roll2,roll3] (GameState r1 r2 f s c m) =
@@ -64,4 +64,4 @@ extractResult (GameState _ _ _ s c m) =
 scoreGame : List (List Int) -> (Int, Bool, String)
 scoreGame frames = extractResult (foldr processFrame initGame frames)
     where
-        initGame = GameState 0 0 0 0 False ""
+        initGame = GameState 0 0 0 0 False "~"
